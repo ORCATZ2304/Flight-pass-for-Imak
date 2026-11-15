@@ -6,13 +6,15 @@
   <title>In-Flight Boarding Pass • For Makk</title>
   <style>
     :root {
-      --bg: #eef2f5;
-      --card: #fdfbf7;
+      --bg: #e7ecf0;
+      --card: #fcf9f2;
       --ink: #1e293b;
       --muted: #64748b;
       --accent: #3b6e8c;
-      --accent-soft: #e6eff4;
-      --border: #dce3e8;
+      --accent-soft: #e4eef3;
+      --border: #d5dde3;
+      /* Inline SVG paper grain texture (100% offline, zero external files) */
+      --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.055'/%3E%3C/svg%3E");
     }
 
     * {
@@ -24,6 +26,8 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg);
+      background-image: radial-gradient(rgba(30, 41, 59, 0.08) 1px, transparent 1px);
+      background-size: 16px 16px;
       color: var(--ink);
       min-height: 100vh;
       display: flex;
@@ -36,35 +40,67 @@
     .pass-wrapper {
       width: 100%;
       max-width: 440px;
-      filter: drop-shadow(0 12px 28px rgba(30, 41, 59, 0.08));
+      filter: drop-shadow(0 14px 26px rgba(30, 41, 59, 0.11))
+              drop-shadow(0 2px 6px rgba(30, 41, 59, 0.06));
+    }
+
+    /* Cardstock surface with tactile paper grain */
+    .ticket-top,
+    .ticket-bottom,
+    .perforation {
+      background-color: var(--card);
+      background-image: var(--paper-grain);
+      background-repeat: repeat;
     }
 
     .ticket-top,
     .ticket-bottom {
-      background: var(--card);
       border-radius: 20px;
       padding: 24px 22px;
+      border: 1px solid rgba(255, 255, 255, 0.75);
     }
 
     .ticket-top {
-      border-bottom-left-radius: 12px;
-      border-bottom-right-radius: 12px;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      border-bottom: none;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Faint diagonal security watermark lines across top stub */
+    .ticket-top::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(
+        -45deg,
+        rgba(59, 110, 140, 0.025) 0px,
+        rgba(59, 110, 140, 0.025) 2px,
+        transparent 2px,
+        transparent 9px
+      );
     }
 
     .ticket-bottom {
-      border-top-left-radius: 12px;
-      border-top-right-radius: 12px;
-      padding-top: 22px;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      border-top: none;
+      padding-top: 20px;
+      box-shadow: inset 0 -2px 4px rgba(30, 41, 59, 0.03);
     }
 
     /* Perforated Tear Line */
     .perforation {
       position: relative;
       height: 24px;
-      background: var(--card);
       display: flex;
       align-items: center;
       padding: 0 18px;
+      border-left: 1px solid rgba(255, 255, 255, 0.75);
+      border-right: 1px solid rgba(255, 255, 255, 0.75);
     }
 
     .perforation::before,
@@ -73,22 +109,25 @@
       position: absolute;
       width: 24px;
       height: 24px;
-      background: var(--bg);
+      background-color: var(--bg);
+      background-image: radial-gradient(rgba(30, 41, 59, 0.08) 1px, transparent 1px);
+      background-size: 16px 16px;
       border-radius: 50%;
       top: 0;
+      box-shadow: inset 0 1px 3px rgba(30, 41, 59, 0.12);
     }
 
     .perforation::before {
-      left: -12px;
+      left: -13px;
     }
 
     .perforation::after {
-      right: -12px;
+      right: -13px;
     }
 
     .perforation-line {
       width: 100%;
-      border-top: 2px dashed var(--border);
+      border-top: 2px dashed #c8d2da;
     }
 
     /* Header */
@@ -97,6 +136,8 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
     }
 
     .airline-tag {
@@ -115,6 +156,7 @@
       border-radius: 999px;
       background: var(--accent-soft);
       color: var(--accent);
+      border: 1px solid rgba(59, 110, 140, 0.18);
     }
 
     /* Route Row */
@@ -123,6 +165,8 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 22px;
+      position: relative;
+      z-index: 1;
     }
 
     .airport {
@@ -163,7 +207,7 @@
     .plane-divider span {
       width: 22px;
       height: 1px;
-      background: var(--border);
+      background: #c8d2da;
     }
 
     /* Flight Details Grid */
@@ -173,6 +217,8 @@
       gap: 12px;
       padding-top: 16px;
       border-top: 1px solid var(--border);
+      position: relative;
+      z-index: 1;
     }
 
     .meta-label {
@@ -191,10 +237,12 @@
       margin-top: 2px;
     }
 
-    /* Clock & Countdown Box */
+    /* Recessed Clock & Countdown Panel */
     .clock-panel {
-      background: #f4f7f9;
+      background-color: #f1f5f8;
+      background-image: var(--paper-grain);
       border: 1px solid var(--border);
+      box-shadow: inset 0 1px 3px rgba(30, 41, 59, 0.05);
       border-radius: 14px;
       padding: 16px;
       text-align: center;
@@ -233,7 +281,7 @@
     /* Sealed vs Unlocked Content */
     .sealed-box {
       text-align: center;
-      padding: 12px 6px 4px;
+      padding: 10px 6px 2px;
     }
 
     .sealed-box p {
@@ -244,11 +292,13 @@
     .open-btn {
       display: none;
       width: 100%;
-      margin-top: 6px;
+      margin-top: 8px;
       padding: 14px 18px;
       border: none;
       border-radius: 12px;
       background: var(--accent);
+      box-shadow: 0 4px 12px rgba(59, 110, 140, 0.25),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
       color: #ffffff;
       font-size: 14px;
       font-weight: 600;
@@ -261,34 +311,88 @@
       transform: scale(0.99);
     }
 
+    /* Book-Style Letter Typography */
     .letter-container {
       display: none;
       animation: fadeIn 0.6s ease forwards;
+      padding-top: 4px;
     }
 
     .letter-container.visible {
       display: block;
     }
 
+    .book-ornament {
+      text-align: center;
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      font-size: 11px;
+      letter-spacing: 0.24em;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .letter-body {
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    }
+
     .letter-body p {
-      font-size: 14.5px;
-      color: var(--ink);
+      font-size: 15.2px;
+      line-height: 1.8;
+      letter-spacing: 0.005em;
+      color: #292522;
       margin-bottom: 16px;
+    }
+
+    .letter-body p:first-child::first-letter {
+      float: left;
+      font-size: 2.6em;
+      line-height: 0.85;
+      padding-right: 8px;
+      padding-top: 3px;
+      color: var(--accent);
+      font-weight: 600;
     }
 
     .letter-body p:last-child {
       margin-bottom: 0;
     }
 
-    .ticket-footer {
+    /* Barcode & Boarding Pass Footer */
+    .barcode-strip {
       margin-top: 22px;
-      padding-top: 14px;
-      border-top: 1px dashed var(--border);
+      padding-top: 16px;
+      border-top: 1px dashed #c8d2da;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .barcode-bars {
+      width: 100%;
+      height: 30px;
+      opacity: 0.72;
+      background-image: repeating-linear-gradient(
+        90deg,
+        #1e293b 0px, #1e293b 2px,
+        transparent 2px, transparent 5px,
+        #1e293b 5px, #1e293b 6px,
+        transparent 6px, transparent 8px,
+        #1e293b 8px, #1e293b 11px,
+        transparent 11px, transparent 15px,
+        #1e293b 15px, #1e293b 16px,
+        transparent 16px, transparent 20px
+      );
+    }
+
+    .ticket-footer {
+      width: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 11px;
+      font-size: 10.5px;
+      letter-spacing: 0.06em;
       color: var(--muted);
     }
 
@@ -373,8 +477,9 @@
         <button class="open-btn" id="openBtn" type="button">Buka Pesan Penerbangan</button>
       </div>
 
-      <!-- Unlocked Letter -->
+      <!-- EDIT PESANMU DI SINI -->
       <article class="letter-container" id="letterContainer">
+        <div class="book-ornament">— ✦ —</div>
         <div class="letter-body">
           <p>
             Hai makk, have a safe flight, hati-hati di koreaaa... Maaf, aku tau kamu mungkin nggak nyangka aku bakal ngomong ini dan aku tau kemungkinan ini sangat kecil, tapi setidaknya aku pengen jujur soal perasaanku.
@@ -386,16 +491,19 @@
             Aku ngerti banget kalau mungkin perasaan kita nggak sama, dan aku nggak nuntut jawaban atau berharap lebih dari ini. Mungkin kalau sesuai yang ku bayangkan, setidaknya yang paling aku harap setelah ini cuma satu, yaitu semoga kita tetap bisa temenan kayak biasa ya, mak. Aku gamau pengakuan ini bikin kita jadi canggung, terutama di grup—kasian Kica yang gatau apa-apa kalau suasananya tiba-tiba jadi aneh, walau mungkin dia udah tau juga sih... maaf ya kalo aku terkesan egois, tapi kali ini aku mohon...
           </p>
           <p>
-            Aku tau mungkin setelah ini kita akan sibuk masing-masing, kita bakal punya kegiatan masing-masing, yang mungkin bikin kita ga bisa dcan kayak dulu... But please remember this: I will always hope the best for you, and I will always be here if you need me.
+            Aku tau mungkin setelah ini kita akan sibuk masing-masing, kita bakal punya kegiatan masing-masing, yang mungkin bikin kita ga bisa dcan kayak dulu... Please remember this: I will always hope the best for you, and I will always be here if you need me.
           </p>
           <p>
             Semangat ya mak, jangan lupa minum, jangan lupa makan... kalo capek istirahat, jangan dipaksa, kasian tubuh kamu. Jaga diri di sana... enjoy Korea, I know you will have great memories there. See you later mak... Until we meet again, when fate decides that our paths should cross once more.
           </p>
         </div>
 
-        <div class="ticket-footer">
-          <span>SAFE FLIGHT • KOREA</span>
-          <span>OFFLINE READY</span>
+        <div class="barcode-strip">
+          <div class="barcode-bars" aria-hidden="true"></div>
+          <div class="ticket-footer">
+            <span>PASS NO. 05-DEC-KR</span>
+            <span>OFFLINE READY</span>
+          </div>
         </div>
       </article>
     </section>
@@ -403,19 +511,18 @@
 
   <script>
     // =========================================================
-    // 1. EDIT JADWAL & DETAIL PENERBANGAN DI SINI
+    // EDIT JADWAL & DETAIL PENERBANGAN DI SINI
     // =========================================================
     const FLIGHT_CONFIG = {
       // Format ISO: "YYYY-MM-DDTHH:MM:SS+07:00" (+07:00 untuk WIB)
       takeoffISO: "2026-12-15T22:00:00+07:00",
-      passengerName: "IMAK",
+      passengerName: "MAKK",
       originCode: "YIA",
       originCity: "Yogyakarta",
       destCode: "ICN",
       destCity: "Seoul, Korea"
     };
 
-    // Populate metadata
     document.getElementById("passengerName").textContent = FLIGHT_CONFIG.passengerName;
     document.getElementById("originCode").textContent = FLIGHT_CONFIG.originCode;
     document.getElementById("originCity").textContent = FLIGHT_CONFIG.originCity;
@@ -430,7 +537,6 @@
     const depMin = String(takeoffDate.getMinutes()).padStart(2, "0");
     document.getElementById("departureDisplay").textContent = `${depDay} ${depMonth} • ${depHour}:${depMin}`;
 
-    // Elements
     const liveClockEl = document.getElementById("liveClock");
     const countdownLabelEl = document.getElementById("countdownLabel");
     const countdownTimerEl = document.getElementById("countdownTimer");
@@ -440,10 +546,8 @@
     const openBtnEl = document.getElementById("openBtn");
     const letterContainerEl = document.getElementById("letterContainer");
 
-    // Allow preview mode via ?preview=1 or tapping the airplane icon 5 times
     let forceUnlock = new URLSearchParams(window.location.search).get("preview") === "1";
     let isUnlocked = false;
-    let isLetterOpened = false;
     let planeTapCount = 0;
 
     document.getElementById("planeIcon").addEventListener("click", () => {
@@ -455,7 +559,6 @@
     });
 
     openBtnEl.addEventListener("click", () => {
-      isLetterOpened = true;
       sealedBoxEl.style.display = "none";
       letterContainerEl.classList.add("visible");
     });
@@ -466,8 +569,6 @@
 
     function updateClock() {
       const now = new Date();
-
-      // Update live local clock
       liveClockEl.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
 
       const diff = takeoffDate.getTime() - now.getTime();
@@ -495,7 +596,6 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // Register offline cache worker when hosted over HTTPS
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("./sw.js").catch(() => {});
