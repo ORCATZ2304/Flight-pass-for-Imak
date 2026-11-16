@@ -472,9 +472,9 @@
       <!-- Locked State -->
       <div class="sealed-box" id="sealedBox">
         <p id="sealedHint">
-          Pesan ini masih terkunci sampai jam keberangkatanmu. Biarkan tab ini terbuka sebelum mengaktifkan Mode Pesawat—nanti otomatis terbuka saat kamu sudah di udara.
+          Eitss, no no ya Imak, gaboleh ngintip... sabar ya, tunggu pesawatnya terbang. Biarin tab-nya kebuka sebelum nyalain Airplane Mode ya, it'll unlock once you go nguenggg.
         </p>
-        <button class="open-btn" id="openBtn" type="button">Buka Pesan Penerbangan</button>
+        <button class="open-btn" id="openBtn" type="button">Nah, Sekarang Boleh Intip</button>
       </div>
 
       <!-- EDIT PESANMU DI SINI -->
@@ -516,9 +516,9 @@
     const FLIGHT_CONFIG = {
       // Format ISO: "YYYY-MM-DDTHH:MM:SS+07:00" (+07:00 untuk WIB)
       takeoffISO: "2026-12-15T22:00:00+07:00",
-      passengerName: "MAKK",
-      originCode: "YIA",
-      originCity: "Yogyakarta",
+      passengerName: "IMAK",
+      originCode: "CGK",
+      originCity: "Jakarta",
       destCode: "ICN",
       destCity: "Seoul, Korea"
     };
@@ -579,7 +579,7 @@
           statusPillEl.textContent = "IN THE AIR";
           countdownLabelEl.textContent = "Flight Status";
           countdownTimerEl.textContent = "CLEARED TO READ";
-          sealedHintEl.textContent = "Selamat menikmati penerbanganmu. Tap tombol di bawah kalau kamu sudah siap membaca.";
+          sealedHintEl.textContent = "Enjoy your flight mak. Here's a little project I made for you.";
           openBtnEl.style.display = "block";
         }
         return;
