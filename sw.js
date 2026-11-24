@@ -1,4 +1,4 @@
-const CACHE_NAME = "inflight-pass-v2";
+const CACHE_NAME = "inflight-pass-v1";
 const ASSETS = ["./", "./index.html"];
 
 self.addEventListener("install", (event) => {
